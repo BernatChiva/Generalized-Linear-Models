@@ -1,0 +1,200 @@
+---
+title: '2'
+author: "Bernat Chiva"
+date: "12/5/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+```{r}
+library(car)
+library(HH)
+library(readr)
+REG8 <- read_delim("C:/Users/berna/OneDrive/Desktop/UPC/S1/5. Models Lineals/datasets/REG8.csv", 
+    ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
+    trim_ws = TRUE)
+
+```
+```{r}
+first <- subset(REG8, REG8$REG == 1)
+second <- subset(REG8, REG8$REG == 2)
+third <- subset(REG8, REG8$REG == 3)
+fourth <- subset(REG8, REG8$REG == 4)
+fifth <- subset(REG8, REG8$REG == 5)
+sixth <- subset(REG8, REG8$REG == 6)
+seventh <- subset(REG8, REG8$REG == 7)
+eight <- subset(REG8, REG8$REG == 8)
+```
+
+```{r}
+mod1 <- lm(Y~X, data = first)
+summary(mod1)
+```
+```{r}
+anova(mod1)
+```
+```{r}
+mod2 <- lm(Y~X, data = second)
+summary(mod2)
+```
+```{r}
+anova(mod2)
+```
+
+```{r}
+mod3 <- lm(Y~X, data = third)
+summary(mod3)
+```
+```{r}
+anova(mod3)
+```
+
+```{r}
+mod4 <- lm(Y~X, data = fourth)
+summary(mod4)
+```
+```{r}
+anova(mod4)
+```
+```{r}
+mod5 <- lm(Y~X, data = fifth)
+summary(mod5)
+```
+```{r}
+anova(mod5)
+```
+```{r}
+mod6 <- lm(Y~X, data = sixth)
+summary(mod6)
+```
+```{r}
+anova(mod6)
+```
+```{r}
+mod7 <- lm(Y~X, data = seventh)
+summary(mod7)
+```
+```{r}
+anova(mod7)
+```
+```{r}
+mod8 <- lm(Y~X, data = eight)
+summary(mod8)
+```
+```{r}
+anova(mod8)
+```
+
+
+```{r}
+#mod1
+with(first, plot(X,Y))
+abline(lm(Y~X, data = first))
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod1, ask=F)
+par(oldpar)
+```
+
+
+```{r}
+with(second, plot(X,Y))
+abline(lm(Y~X, data = second))
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod2, ask=F)
+par(oldpar)
+```
+```{r}
+with(third, plot(X,Y))
+abline(lm(Y~X, data = third))
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod3, ask=F)
+par(oldpar)
+```
+
+
+```{r}
+with(fourth, plot(X,Y))
+abline(lm(Y~X, data = fourth))
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod4, ask=F)
+par(oldpar)
+```
+```{r}
+with(fifth, plot(X,Y))
+abline(lm(Y~X, data = fifth))
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod5, ask=F)
+par(oldpar)
+```
+
+
+```{r}
+with(sixth, plot(X,Y))
+abline(lm(Y~X, data = sixth))
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod6, ask=F)
+par(oldpar)
+```
+
+
+```{r}
+with(seventh, plot(X,Y))
+abline(lm(Y~X, data = seventh))
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod7, ask=F)
+par(oldpar)
+```
+```{r}
+seventh$X<-as.factor(seventh$X)
+mod7b<-lm(Y~X, data = seventh)
+summary(mod7b)
+```
+
+
+```{r}
+with(eight, plot(X,Y))
+abline(lm(Y~X, data = eight))
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod8, ask=F)
+par(oldpar)
+```
