@@ -1,0 +1,326 @@
+---
+title: '12'
+author: "Bernat Chiva"
+date: "12/5/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+library(car)
+library(HH)
+library(tables)
+library(RcmdrMisc)
+library(emmeans)
+library(ggplot2)
+library(hrbrthemes)
+library(dplyr)
+library(pander)
+```
+```{r}
+library(readr)
+PRAC2F <- read_delim("C:/Users/berna/OneDrive/Desktop/UPC/S1/5. Models Lineals/datasets/PRAC2F.csv", 
+    ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
+    trim_ws = TRUE)
+```
+$$ Y_{ij}=\beta_0+\beta_1*F1_i+\beta_2*F2_j$$
+$$ Y_{ij}=\beta_0+\beta_1*F1_i+\beta_2*F2_j+\beta_3*F1_i*F2_j$$
+$$ Y_{ij}=\beta_0+\beta_1*F1_i+\beta_3*F1_i*F2_j$$
+
+```{r}
+PRAC2F$F1 <- as.factor(PRAC2F$F1)
+PRAC2F$F2 <- as.factor(PRAC2F$F2)
+```
+```{r}
+summ<-summary(PRAC2F)
+pander(summ, style='multiline', plan.ascii=F)
+```
+```{r}
+#means table, descriptive analysis
+tab<-tabular((V1+V2+V3+V4+V5+V6)*(F1+1)~mean*(F2+1), PRAC2F)
+pander(tab, style='multiline', plan.ascii=F)
+```
+```{r}
+a<-as.vector(with(PRAC2F, tapply(V1, list(F2=F2, F1=F1),mean)))
+b<-as.vector(with(PRAC2F, tapply(V1, list(F2=F2, F1=F1),sd)))
+
+stats<-cbind(a, b)
+stats<-data.frame(stats)
+stats$F1<-as.factor(c(1,1,1,1,2,2,2,2,3,3,3,3))
+stats$F2<-as.factor(c(1,2,3,4,1,2,3,4,1,2,3,4))
+
+
+ggplot(stats, aes(y=b, x=a, color=F2, shape=F1) )+ xlab("Sample Mean") +ylab("Standard Deviation")+ ggtitle("Sample Mean vs SD of grades")+
+    geom_point(size=5, ) +
+    theme_ipsum()
+```
+```{r}
+a2<-as.vector(with(PRAC2F, tapply(V2, list(F2=F2, F1=F1),mean)))
+b2<-as.vector(with(PRAC2F, tapply(V2, list(F2=F2, F1=F1),sd)))
+
+stats<-cbind(a2, b2)
+stats<-data.frame(stats)
+stats$F1<-as.factor(c(1,1,1,1,2,2,2,2,3,3,3,3))
+stats$F2<-as.factor(c(1,2,3,4,1,2,3,4,1,2,3,4))
+
+
+ggplot(stats, aes(y=b2, x=a2, color=F2, shape=F1) )+ xlab("Sample Mean") +ylab("Standard Deviation")+ ggtitle("Sample Mean vs SD of grades")+
+    geom_point(size=5, ) +
+    theme_ipsum()
+```
+```{r}
+a3<-as.vector(with(PRAC2F, tapply(V3, list(F2=F2, F1=F1),mean)))
+b3<-as.vector(with(PRAC2F, tapply(V3, list(F2=F2, F1=F1),sd)))
+
+stats<-cbind(a3, b3)
+stats<-data.frame(stats)
+stats$F1<-as.factor(c(1,1,1,1,2,2,2,2,3,3,3,3))
+stats$F2<-as.factor(c(1,2,3,4,1,2,3,4,1,2,3,4))
+
+
+ggplot(stats, aes(y=b3, x=a3, color=F2, shape=F1) )+ xlab("Sample Mean") +ylab("Standard Deviation")+ ggtitle("Sample Mean vs SD of grades")+
+    geom_point(size=5, ) +
+    theme_ipsum()
+```
+```{r}
+a4<-as.vector(with(PRAC2F, tapply(V4, list(F2=F2, F1=F1),mean)))
+b4<-as.vector(with(PRAC2F, tapply(V4, list(F2=F2, F1=F1),sd)))
+
+stats<-cbind(a4, b4)
+stats<-data.frame(stats)
+stats$F1<-as.factor(c(1,1,1,1,2,2,2,2,3,3,3,3))
+stats$F2<-as.factor(c(1,2,3,4,1,2,3,4,1,2,3,4))
+
+
+ggplot(stats, aes(y=b4, x=a4, color=F2, shape=F1) )+ xlab("Sample Mean") +ylab("Standard Deviation")+ ggtitle("Sample Mean vs SD of grades")+
+    geom_point(size=5, ) +
+    theme_ipsum()
+```
+```{r}
+a5<-as.vector(with(PRAC2F, tapply(V5, list(F2=F2, F1=F1),mean)))
+b5<-as.vector(with(PRAC2F, tapply(V5, list(F2=F2, F1=F1),sd)))
+
+stats<-cbind(a5, b5)
+stats<-data.frame(stats)
+stats$F1<-as.factor(c(1,1,1,1,2,2,2,2,3,3,3,3))
+stats$F2<-as.factor(c(1,2,3,4,1,2,3,4,1,2,3,4))
+
+
+ggplot(stats, aes(y=b5, x=a5, color=F2, shape=F1) )+ xlab("Sample Mean") +ylab("Standard Deviation")+ ggtitle("Sample Mean vs SD of grades")+
+    geom_point(size=5, ) +
+    theme_ipsum()
+```
+```{r}
+a6<-as.vector(with(PRAC2F, tapply(V6, list(F2=F2, F1=F1),mean)))
+b6<-as.vector(with(PRAC2F, tapply(V6, list(F2=F2, F1=F1),sd)))
+
+stats<-cbind(a6, b6)
+stats<-data.frame(stats)
+stats$F1<-as.factor(c(1,1,1,1,2,2,2,2,3,3,3,3))
+stats$F2<-as.factor(c(1,2,3,4,1,2,3,4,1,2,3,4))
+
+
+ggplot(stats, aes(y=b6, x=a6, color=F2, shape=F1) )+ xlab("Sample Mean") +ylab("Standard Deviation")+ ggtitle("Sample Mean vs SD of grades")+
+    geom_point(size=5, ) +
+    theme_ipsum()
+```
+• Which is the error variance estimation?
+```{r}
+
+```
+
+
+
+```{r}
+#anova test
+mv1<-lm(V1~F1*F2, PRAC2F)
+anova(mv1)
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mv1, ask=F)
+par(oldpar)
+```
+
+
+```{r}
+#anova test
+mv2<-lm(V2~F1*F2, PRAC2F)
+anova(mv2)
+summary(mv2)
+```
+```{r}
+plot(predict(mv2),resid(mv2))
+abline(h=0,lty=2)
+```
+
+```{r}
+#anova test
+mv3<-lm(V3~F1*F2, PRAC2F)
+anova(mv3)
+```
+```{r}
+plot(predict(mv3),resid(mv3))
+abline(h=0,lty=2)
+```
+
+```{r}
+#anova test
+mv4<-lm(V4~F1*F2, PRAC2F)
+anova(mv4)
+```
+```{r}
+plot(predict(mv4),resid(mv4))
+abline(h=0,lty=2)
+```
+
+```{r}
+mv5<-lm(V5~F1*F2, PRAC2F)
+anova(mv5)
+```
+```{r}
+plot(predict(mv5),resid(mv5))
+abline(h=0,lty=2)
+```
+
+```{r}
+mv6<-lm(V6~F1*F2, PRAC2F)
+anova(mv6)
+```
+```{r}
+plot(predict(mv6),resid(mv6))
+abline(h=0,lty=2)
+```
+
+
+```{r}
+#Witout interaction
+mvb1<-lm(V1~F1+F2, PRAC2F)
+anova(mvb1)
+```
+```{r}
+plot(predict(mvb1),resid(mvb1))
+abline(h=0,lty=2)
+```
+```{r}
+mvb2<-lm(V2~F1+F2, PRAC2F)
+anova(mvb2)
+```
+```{r}
+plot(predict(mvb2),resid(mvb2))
+abline(h=0,lty=2)
+```
+```{r}
+mvb3<-lm(V3~F1+F2, PRAC2F)
+anova(mvb3)
+```
+```{r}
+plot(predict(mvb3),resid(mvb3))
+abline(h=0,lty=2)
+```
+```{r}
+mvb4<-lm(V4~F1+F2, PRAC2F)
+anova(mvb4)
+```
+```{r}
+plot(predict(mvb4),resid(mvb4))
+abline(h=0,lty=2)
+```
+```{r}
+mvb5<-lm(V5~F1+F2, PRAC2F)
+anova(mvb5)
+```
+```{r}
+plot(predict(mvb5),resid(mvb5))
+abline(h=0,lty=2)
+```
+```{r}
+mvb6<-lm(V6~F1+F2, PRAC2F)
+anova(mvb6)
+```
+```{r}
+plot(predict(mvb6),resid(mvb6))
+abline(h=0,lty=2)
+```
+```{r}
+#Nested design
+mvc1<-lm(V1~F1+F1:F2, PRAC2F)
+anova(mvc1)
+```
+```{r}
+plot(predict(mvc1),resid(mvc1))
+abline(h=0,lty=2)
+```
+
+
+```{r}
+mvc2<-lm(V2~F1+F1:F2, PRAC2F)
+anova(mvc2)
+```
+```{r}
+plot(predict(mvc2),resid(mvc2))
+abline(h=0,lty=2)
+```
+
+
+```{r}
+mvc3<-lm(V3~F1+F1:F2, PRAC2F)
+anova(mvc3)
+```
+```{r}
+plot(predict(mvc3),resid(mvc3))
+abline(h=0,lty=2)
+```
+
+
+```{r}
+mvc4<-lm(V4~F1+F1:F2, PRAC2F)
+anova(mvc4)
+```
+```{r}
+plot(predict(mvc4),resid(mvc4))
+abline(h=0,lty=2)
+```
+
+
+```{r}
+mvc5<-lm(V5~F1+F1:F2, PRAC2F)
+anova(mvc5)
+```
+```{r}
+plot(predict(mvc5),resid(mvc5))
+abline(h=0,lty=2)
+```
+
+
+```{r}
+mvc6<-lm(V6~F1+F1:F2, PRAC2F)
+anova(mvc6)
+```
+```{r}
+plot(predict(mvc6),resid(mvc6))
+abline(h=0,lty=2)
+```
+
