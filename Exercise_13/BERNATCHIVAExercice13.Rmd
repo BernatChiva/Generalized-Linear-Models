@@ -1,0 +1,101 @@
+---
+title: '13'
+author: "Bernat Chiva"
+date: "12/6/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+library(car)
+library(HH)
+library(tables)
+library(RcmdrMisc)
+library(doBy)
+library(emmeans)
+library(multcompView)
+library(readr)
+wheat <- read_delim("C:/Users/berna/OneDrive/Desktop/UPC/S1/5. Models Lineals/datasets/wheat.csv", 
+    ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
+    trim_ws = TRUE)
+```
+```{r}
+wheat$VAR<-as.factor(wheat$VAR)
+wheat$PRES<-as.factor(wheat$PRES)
+```
+```{r}
+summary(wheat)
+```
+```{r}
+mod1<-lm(W2~VAR*PRES, wheat)
+```
+```{r}
+summary(mod1)
+```
+```{r}
+CLD(emmeans(mod1,~VAR),Letters=letters,reversed=T)
+```
+```{r}
+CLD(emmeans(mod1,~VAR*PRES),Letters=letters,reversed=T)
+```
+```{r}
+(emmip(mod1,VAR~PRES,CIs=TRUE))
+```
+
+```{r}
+#type I ss
+anova(mod1)
+```
+```{r}
+#type III ss
+Anova(mod1, type='III')
+```
+```{r}
+#ANOVA assumptions
+oldpar <- par( mfrow=c(2,2))
+plot(mod1, ask=F)
+par(oldpar)
+```
+
+```{r}
+#additive model
+mod2<-lm(W2~VAR+PRES, wheat)
+summary(mod2)
+```
+```{r}
+anova(mod2)
+```
+```{r}
+Anova(mod2, type = 'III')
+```
+```{r}
+#ANOVA assumptions
+oldpar <- par( mfrow=c(2,2))
+plot(mod2, ask=F)
+par(oldpar)
+```
+
+
