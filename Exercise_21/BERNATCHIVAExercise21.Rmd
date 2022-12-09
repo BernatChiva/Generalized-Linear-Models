@@ -1,0 +1,188 @@
+---
+title: '21'
+author: "Bernat Chiva"
+date: "12/8/2020"
+output: word_document
+---
+```{r}
+library(car)
+library(HH)
+library(RcmdrMisc)
+library(doBy)
+library(emmeans)
+library(tables)
+library(ggplot2)
+library(sandwich)
+library(survival)
+library(estimability)
+library(readr)
+vitc <- read_delim("C:/Users/berna/OneDrive/Desktop/UPC/S1/5. Models Lineals/datasets/vitc.csv", 
+    ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
+    trim_ws = TRUE)
+```
+```{r}
+vitc$treat<-as.factor(vitc$treat)
+summary(vitc)
+```
+The model we are assuming is:
+$$VitC=\alpha_ie^{-\beta_i*week}$$
+Is the same as assuming:
+$$log(VitC)=log(\alpha_i)-\beta_i*week$$
+GAMMA
+
+a) Define a generalized linear model with the “gamma” family, useful to check if the treatments loss Vitamin C at the same velocity, that is if β1 = β2 = β3 or not, and also to see if the three values of αi are or not statistically equivalent.
+```{r}
+#Model with both parameters interaction
+mod1<-glm(vitc~week*treat, family=Gamma(link="log"), data=vitc)
+summary(mod1)
+```
+We check the intercept for the lines at week 0:
+```{r}
+#Check intercept
+(emm1<-emmeans(mod1,~treat|week, at=list(week=c(0))))
+(pairs(emm1))
+```
+The intercept is significantly equal for all the lines
+We assume a new model with the same intercept and without treatment paramater, onlt week and the interaction
+```{r}
+#Model without treatment
+mod12<-glm(vitc~week+treat:week, family=Gamma(link="log"), data=vitc)
+summary(mod12)
+```
+
+• Estimate αi. Are they statistically different?
+To estimate $$\alpha_1=exp{3.86737}=47.8165$$
+To estimate $$\alpha_2=exp{3.78}=43.816$$
+To estimate $$\alpha_3=exp{3.97}=52.9845$$
+
+These are the estimations of each alpha, although we say that all of them are the same, because the alphas are not significant different from each other.
+
+• Estimate βi. Are they statistically different?
+To estimate $$\beta_1=-0.15981$$
+To estimate $$\beta_2=0.12122$$
+To estimate $$\beta_3=0.04532$$
+
+The betas are significant different from each other, so we assume different slope for each line.
+
+LOGNORMAL
+
+b) Define a LogNormal generalized linear model useful to check if the treatments loss Vitamin
+C at the same velocity, that is if β1 = β2 = β3 or not, and also to see if the three values of
+αi are or not statistically equivalent. 
+
+
+```{r}
+#Model with both parameters interaction
+mod2<-glm(log(vitc)~week*treat, family=gaussian(link="identity"), data=vitc)
+summary(mod2)
+```
+To check the intercepts of the three lines we will check the expected values at week 0:
+```{r}
+(emm2<-emmeans(mod2,~treat|week, at=list(week=c(0))))
+(pairs(emm2))
+```
+The alphas are not significantly different from each other and the treat parameter is not significant either.
+
+We assume a new model without the treat parameter.
+```{r}
+#Model with week and interaction
+mod21<-glm(log(vitc)~week+treat:week, family=gaussian(link="identity"), data=vitc)
+summary(mod21)
+```
+• Estimate αi. Are they statistically different?
+To estimate $$\alpha_1=exp{3.82}=45.6042$$
+To estimate $$\alpha_2=exp{3.72}=41.2644$$
+To estimate $$\alpha_3=exp{3.95}=51.9354$$
+
+• Estimate βi. Are they statistically different?
+To estimate $$\beta_1=-0.1648$$
+To estimate $$\beta_2=0.12462$$
+To estimate $$\beta_3=0.04778$$
+
+NORMAL
+
+c) Define a generalized linear model with the “normal” family, useful to check if the treatments loss Vitamin C at the same velocity, that is if β1 = β2 = β3 or not, and also to see if the three values of αi are or not statistically equivalent.
+```{r}
+mod3<-glm(vitc~week*treat,family= gaussian(link="log"), data=vitc)
+summary(mod3)
+```
+```{r}
+(emm3<-emmeans(mod3,~treat|week, at=list(week=c(0))))
+(pairs(emm3))
+```
+Again, the alphas are not  significantly different from each other, we assume the same intercept. As well the paramameter treatment is not significant. We can fit a better model.
+```{r}
+mod31<-glm(vitc~week+treat:week,family= gaussian(link="log"), data=vitc)
+summary(mod31)
+```
+• Estimate αi. Are they statistically different?
+To estimate $$\alpha_1=exp{3.76}=45.6042$$
+To estimate $$\alpha_2=exp{3.8}=41.2644$$
+To estimate $$\alpha_3=exp{4.09}=51.9354$$
+
+• Estimate βi. Are they statistically different?
+To estimate $$\beta_1=-0.16071$$
+To estimate $$\beta_2=0.11891$$
+To estimate $$\beta_3=0.04594$$ **the interaction between week and treatment c is not different from the interaction between week and treatment a, so we assumer that are the same**
+
+
+e) Justify which of the four models that you have fitted better verify the model hypothesis and gives place to the bests fits.
+
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod1)
+par(oldpar)
+```
+
+GAMMA
+```{r}
+residualPlots(mod12, test=F)
+plot(fitted(mod12),residuals(mod12,type="pearson"))
+```
+AIC=511.32
+```{r}
+sum(residuals(mod12, type="pearson")^2)
+```
+```{r}
+qchisq(0.05,68)
+```
+```{r}
+pchisq(8.323,68,log=FALSE, lower.tail=TRUE)
+```
+We accept the null hypothesis of the deviance test, and canc conclude that out model is better than the null mmodel and we are explaining something. The AIC is 511.32, in order to compare with the other models. As well we assume normality for the residuals.
+
+LOGNORMAL
+```{r}
+residualPlots(mod21, test=F)
+plot(fitted(mod21),residuals(mod21,type="pearson"))
+```
+AIC=63.131 **The AIC is very large for this model**
+```{r}
+sum(residuals(mod21, type="pearson")^2)
+```
+```{r}
+qchisq(0.05,68)
+```
+```{r}
+pchisq(8.8173,68,log=FALSE, lower.tail=TRUE)
+```
+Although we reject the null hypothesis and accept the normality of the residuals, the AIC of the LogNormal model is very high, and we can conclude that is not an appropiate model.
+
+NORMAL
+```{r}
+residualPlots(mod31,test=F)
+plot(fitted(mod31),residuals(mod31,type="pearson"))
+```
+AIC=533.64
+```{r}
+sum(residuals(mod31, type="pearson")^2)
+```
+```{r}
+qchisq(0.05,68)
+```
+```{r}
+pchisq(0.05,68,log=FALSE, lower.tail=TRUE)
+```
+The residuals are clearly not ollowing a normal distribution, hence this third model is no appropiate for our data.
+
+Conclusions: We have fitted three differetn models for our non-normal data. We have tried three different transformations to get to the linearity. Overall for out Vitamin C data tha model that fits better and the one we should stick to is the Gamma transformation with the logarithm link. The AIC is the lowest amongs our models and the normality of the residuals is verified.
