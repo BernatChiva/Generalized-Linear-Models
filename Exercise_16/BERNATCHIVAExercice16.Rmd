@@ -1,0 +1,319 @@
+---
+title: '16'
+author: "Bernat Chiva"
+date: "12/6/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+library(car)
+library(HH)
+library(tables)
+library(RcmdrMisc)
+library(doBy)
+library(emmeans)
+library(qwraps2)
+library(pander)
+library(readr)
+PRACOVAR <- read_delim("C:/Users/berna/OneDrive/Desktop/UPC/S1/5. Models Lineals/datasets/PRACOVAR.csv", 
+    ";", escape_double = FALSE, locale = locale(decimal_mark = ","), 
+    trim_ws = TRUE)
+```
+```{r}
+PRACOVAR$FACTOR<-as.factor(PRACOVAR$FACTOR)
+summary(PRACOVAR)
+```
+```{r}
+dim(PRACOVAR)
+```
+```{r}
+mean_sd(PRACOVAR$X, denote_sd = 'paren')
+```
+```{r}
+mean_sd(PRACOVAR$Y1, denote_sd = 'paren')
+```
+```{r}
+mean_sd(PRACOVAR$Y2, denote_sd = 'paren')
+```
+```{r}
+mean_sd(PRACOVAR$Y3, denote_sd = 'paren')
+```
+```{r}
+mean_sd(PRACOVAR$Y4, denote_sd = 'paren')
+```
+```{r}
+mean_sd(PRACOVAR$Y5, denote_sd = 'paren')
+```
+```{r}
+mean_sd(PRACOVAR$Y6, denote_sd = 'paren')
+```
+```{r}
+mean_sd(PRACOVAR$Y7, denote_sd = 'paren')
+```
+```{r}
+mean_sd(PRACOVAR$Y8, denote_sd = 'paren')
+```
+```{r}
+#Mean ans sd table
+aa<-tabular((FACTOR+1)~(X+Y1)*((n=1)+mean+sd),PRACOVAR)
+pander(aa, style='multiline', plan.ascii=F)
+```
+```{r}
+#Mean ans sd table
+a<-tabular((FACTOR+1)~(X+Y2)*((n=1)+mean+sd),PRACOVAR)
+pander(a, style='multiline', plan.ascii=F)
+```
+```{r}
+#Mean ans sd table
+b<-tabular((FACTOR+1)~(X+Y3)*((n=1)+mean+sd),PRACOVAR)
+pander(b, style='multiline', plan.ascii=F)
+```
+```{r}
+#Mean ans sd table
+c<-tabular((FACTOR+1)~(X+Y4)*((n=1)+mean+sd),PRACOVAR)
+pander(c, style='multiline', plan.ascii=F)
+```
+```{r}
+#Mean ans sd table
+d<-tabular((FACTOR+1)~(X+Y5)*((n=1)+mean+sd),PRACOVAR)
+pander(d, style='multiline', plan.ascii=F)
+```
+```{r}
+#Mean ans sd table
+e<-tabular((FACTOR+1)~(X+Y6)*((n=1)+mean+sd),PRACOVAR)
+pander(e, style='multiline', plan.ascii=F)
+```
+```{r}
+#Mean ans sd table
+f<-tabular((FACTOR+1)~(X+Y7)*((n=1)+mean+sd),PRACOVAR)
+pander(f, style='multiline', plan.ascii=F)
+```
+```{r}
+#Mean ans sd table
+j<-tabular((FACTOR+1)~(X+Y8)*((n=1)+mean+sd),PRACOVAR)
+pander(j, style='multiline', plan.ascii=F)
+```
+```{r}
+scatterplot(Y1~X|FACTOR,smooth=F,dat=PRACOVAR)
+```
+```{r}
+mod1<-lm(Y1~X*FACTOR, PRACOVAR)
+summary(mod1)
+anova(mod1)
+```
+```{r}
+plot(predict(mod1),resid(mod1))
+abline(h=0,lty=2)
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod1, ask=F)
+par(oldpar)
+```
+
+
+```{r}
+#model without interaction
+mod12<-lm(Y1~X+FACTOR, PRACOVAR)
+summary(mod12)
+anova(mod12)
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod12, ask=F)
+par(oldpar)
+```
+```{r}
+scatterplot(Y2~X|FACTOR,smooth=F,dat=PRACOVAR)
+```
+```{r}
+#Model with interaction
+mod2<-lm(Y2~X*FACTOR, PRACOVAR)
+summary(mod2)
+anova(mod2)
+```
+```{r}
+plot(predict(mod2),resid(mod2))
+abline(h=0,lty=2)
+```
+```{r}
+#model without interaction
+mod22<-lm(Y2~X+FACTOR, PRACOVAR)
+summary(mod22)
+anova(mod22)
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod22, ask=F)
+par(oldpar)
+```
+
+```{r}
+scatterplot(Y3~X|FACTOR,smooth=F,dat=PRACOVAR)
+```
+```{r}
+#Model with interaction
+mod3<-lm(Y3~X*FACTOR, PRACOVAR)
+summary(mod3)
+anova(mod3)
+```
+```{r}
+plot(predict(mod3),resid(mod3))
+abline(h=0,lty=2)
+```
+```{r}
+#model without interaction
+mod32<-lm(Y3~X+FACTOR, PRACOVAR)
+summary(mod32)
+anova(mod32)
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod32, ask=F)
+par(oldpar)
+```
+
+```{r}
+scatterplot(Y4~X|FACTOR,smooth=F,dat=PRACOVAR)
+```
+```{r}
+#Model with interaction
+mod4<-lm(Y4~X*FACTOR, PRACOVAR)
+summary(mod4)
+anova(mod4)
+```
+```{r}
+plot(predict(mod4),resid(mod4))
+abline(h=0,lty=2)
+```
+```{r}
+#model without interaction
+mod42<-lm(Y4~X+FACTOR, PRACOVAR)
+summary(mod42)
+anova(mod42)
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod42, ask=F)
+par(oldpar)
+```
+```{r}
+scatterplot(Y5~X|FACTOR,smooth=F,dat=PRACOVAR)
+```
+```{r}
+#Model with interaction
+mod5<-lm(Y5~X*FACTOR, PRACOVAR)
+summary(mod5)
+anova(mod5)
+```
+```{r}
+plot(predict(mod5),resid(mod5))
+abline(h=0,lty=2)
+```
+```{r}
+#model without interaction
+mod52<-lm(Y5~X+FACTOR, PRACOVAR)
+summary(mod52)
+anova(mod52)
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod52, ask=F)
+par(oldpar)
+```
+```{r}
+scatterplot(Y6~X|FACTOR,smooth=F,dat=PRACOVAR)
+```
+```{r}
+#Model with interaction
+mod6<-lm(Y6~X*FACTOR, PRACOVAR)
+summary(mod6)
+anova(mod6)
+```
+```{r}
+plot(predict(mod6),resid(mod6))
+abline(h=0,lty=2)
+```
+```{r}
+#model without interaction
+mod62<-lm(Y6~X+FACTOR, PRACOVAR)
+summary(mod62)
+anova(mod62)
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod62, ask=F)
+par(oldpar)
+```
+```{r}
+scatterplot(Y7~X|FACTOR,smooth=F,dat=PRACOVAR)
+```
+```{r}
+#Model with interaction
+mod7<-lm(Y7~X*FACTOR, PRACOVAR)
+summary(mod7)
+anova(mod7)
+```
+```{r}
+plot(predict(mod7),resid(mod7))
+abline(h=0,lty=2)
+```
+```{r}
+#model without interaction
+mod72<-lm(Y7~X+FACTOR, PRACOVAR)
+summary(mod72)
+anova(mod72)
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod72, ask=F)
+par(oldpar)
+```
+```{r}
+scatterplot(Y8~X|FACTOR,smooth=F,dat=PRACOVAR)
+```
+```{r}
+#Model with interaction
+mod8<-lm(Y8~X*FACTOR, PRACOVAR)
+summary(mod8)
+anova(mod8)
+```
+```{r}
+plot(predict(mod8),resid(mod8))
+abline(h=0,lty=2)
+```
+```{r}
+#model without interaction
+mod82<-lm(Y8~X+FACTOR, PRACOVAR)
+summary(mod82)
+anova(mod82)
+```
+```{r}
+oldpar <- par( mfrow=c(2,2))
+plot(mod82, ask=F)
+par(oldpar)
+```
